@@ -1,0 +1,102 @@
+<html>
+<head>
+	<title>Game Of Life</title>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+    <script type="text/javascript" src="dat.gui.min.js"></script>
+	<script type="text/javascript" src="gol.js"></script>
+</head>
+<body>
+	<script type="text/javascript">
+	window.gol = new GOL({
+		cols: 80,
+		rows: 45,
+		gridColor: '#ccc',
+		// canvas: $('<canvas>').appendTo('body')[0],
+		// cellSize: 10,
+		// borderWidth: 4,
+		// gridWidth: 1,
+		// autoPlay: false,
+		// fps: 30,
+		// random: false,
+		// randomThreshold: 0.5,
+		// seed: 20770,
+		// monochrome: true,
+		/*
+		stateColors: [
+			'#fff', // dead
+			'#f00', // just toggled to alive
+			'#00f', // two rounds alive
+			'#000', // alive
+			'#ff0', // just toggled to dead
+			'#0ff'  // two rounds dead
+		],
+		*/
+	});
+
+    var options = {
+    	play: window.gol.isPlaying(),
+    	generation: 0,
+    	fps: window.gol.fps(),
+    	monochrome: window.gol.monochrome(),
+    	stateColors: [
+			'#fff', // dead
+			'#f00', // just toggled to alive
+			'#00f', // two rounds alive
+			'#000', // alive
+			'#ff0', // just toggled to dead
+			'#fff'  // two rounds dead
+		]
+    };
+
+	var updateGol = function() {
+		gol
+			.fps(options.fps)
+			.monochrome(options.monochrome);
+
+		for (var i = 0; i < options.stateColors.length; i++) {
+			gol.cellState(i, options.stateColors[i]);
+		}
+
+		if (gol.isPlaying() != options.play) {
+			if (!options.play) {
+				gol.pause();
+			} else {
+				gol.play();
+			}
+		}
+	}
+
+    var gui = new dat.GUI();
+
+    gui.add(options, 'play').onChange(updateGol);
+    gui.add(gol, 'step').onChange(updateGol);
+    gui.add(gol, 'clear').onChange(updateGol);
+    gui.add(gol, 'randomize').onChange(updateGol);
+    gui.add(options, 'generation').listen();
+	gui.add(options, 'fps', 1, 200).onChange(updateGol);
+	gui.add(options, 'monochrome').onChange(updateGol);
+	var f2 = gui.addFolder('State Colors');
+	f2.addColor(options.stateColors, 0).onChange(updateGol);
+	f2.addColor(options.stateColors, 1).onChange(updateGol);
+	f2.addColor(options.stateColors, 2).onChange(updateGol);
+	f2.addColor(options.stateColors, 3).onChange(updateGol);
+	f2.addColor(options.stateColors, 4).onChange(updateGol);
+	f2.addColor(options.stateColors, 5).onChange(updateGol);
+/*    gui.add(options, 'descriptorLength', 128, 512).step(32).onChange(doMatch);
+    gui.add(options, 'matchesShown', 1, 100).onChange(doMatch);
+    gui.add(window, 'bluring', false, true).onChange(doMatch);
+    gui.add(window, 'blurRadius', 1.1, 5).onChange(doMatch);
+    gui.add(window, 'fastThreshold', 0, 100).onChange(doMatch);
+    gui.add(window, 'showCorners', false, true).onChange(doMatch);
+    gui.add(window, 'nextImage');
+*/
+
+	var golListen = function() {
+		requestAnimationFrame(golListen);
+		options.generation = gol.generation();
+	};
+
+	requestAnimationFrame(golListen);
+	</script>
+</body>
+</html>
